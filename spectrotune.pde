@@ -38,7 +38,6 @@ Tab tabDefault;
 Tab tabWindowing;
 Tab tabSmoothing;
 Tab tabMIDI;
-Tab tabFiles;
 Tab tabFFT;
 
 Toggle toggleLinearEQ;
@@ -60,7 +59,6 @@ PImage bg;
 PImage whiteKey;
 PImage blackKey;
 PImage octaveBtn;
-PImage logo;
 
 int fftBufferSize = bufferSize;
 int fftSize = fftBufferSize/2;
@@ -115,7 +113,7 @@ void setup() {
   
   // Create MIDI output interface - select the first found device by default
   midiOut = RWMidi.getOutputDevices()[0].createOutput();
-  
+
   // Initialize Minim
   minim = new Minim(this);
   
@@ -127,9 +125,6 @@ void setup() {
   window = new Window();
   smoother = new Smooth();
   
-  // zero pad the buffer
-  zeroPadBuffer();
-  
   // Equalizer settings. Need a tab for this.
   linearEQIntercept = 1f;
   linearEQSlope = 0.01f;
@@ -139,7 +134,6 @@ void setup() {
   whiteKey = loadImage("whitekey.png");
   blackKey = loadImage("blackkey.png");
   octaveBtn = loadImage("octavebutton.png");
-  logo = loadImage("buildingsky.png");
    
   // ControlP5 UI
   controlP5 = new ControlP5(this);
@@ -149,7 +143,6 @@ void setup() {
   tabWindowing = controlP5.addTab("windowing").activateEvent(true);
   tabSmoothing = controlP5.addTab("smoothing").activateEvent(true);
   tabMIDI = controlP5.addTab("midi").activateEvent(true);
-  tabFiles = controlP5.addTab("files").activateEvent(true);
 
   // GENERAL TAB
   tabDefault.setLabel("GENERAL");
@@ -260,11 +253,6 @@ void setup() {
   labelThreshold.moveTo(tabFFT);
   
   // GLOBAL UI
-  
-  // Progress bar 
-  sliderProgress = controlP5.addSlider("Progress", 0, 0, 0, 380, height - 20, 75, 10);
-  sliderProgress.setId(3);
-  sliderProgress.moveTo("global"); // always show no matter what tab is selected
       
   textFont(createFont("Arial", 10, true));
   

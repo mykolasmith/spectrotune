@@ -17,15 +17,10 @@ void render() {
     renderPeaks();
   }
   
-  // Update progress bar
-  sliderProgress.setValueLabel("NO FILE LOADED");
-  
   // Render semi transparent UI background
   fill(0, 200);
   rect(width - 140, 0, width, height);
- 
-  // Render Buildingsky logo on top of it all
-  image(logo, 25, 254);
+  
 }
 
 void renderPeaks() {
