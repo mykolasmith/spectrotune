@@ -62,6 +62,9 @@ PImage blackKey;
 PImage octaveBtn;
 PImage logo;
 
+int fftBufferSize = bufferSize;
+int fftSize = fftBufferSize/2;
+
 float[] buffer = new float[fftBufferSize];
 float[] spectrum = new float[fftSize];
 int[] peak = new int[fftSize];
@@ -117,6 +120,9 @@ void setup() {
   minim = new Minim(this);
   
   sampler = new Sampler();
+  in = minim.getLineIn(Minim.MONO, bufferSize, sampleRate);
+  in.addListener(sampler);
+  fft = new FFT(in.bufferSize(), in.sampleRate());
   
   window = new Window();
   smoother = new Smooth();
