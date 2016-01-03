@@ -1,7 +1,10 @@
+
+
 class Sampler implements AudioListener
 {
   private float[] left;
   private float[] right;
+  private Note[] notesOpen;
   
   Sampler() {
     left = null; 
@@ -38,7 +41,6 @@ class Sampler implements AudioListener
   void process() {
     window.transform(left); // add window to samples
     arrayCopy(left, 0, buffer, 0, left.length);
-    //println(buffer);
     analyze();
     outputMIDINotes();      
   }
@@ -153,7 +155,8 @@ class Sampler implements AudioListener
         } else {
           peak[k] = PEAK;
           
-          println(freq[k], spectrum[k]);
+          Note note = new Note(freq[k], spectrum[k]);
+          midiOut.sendNoteOn(note.channel, note.pitch, note.velocity);
           
           // Track Peaks and Levels in this pass so we can detect harmonics 
           foundPeak = append(foundPeak, freq[k]);
