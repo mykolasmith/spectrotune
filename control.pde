@@ -1,24 +1,9 @@
 void keyPressed() {
   switch(key) {
     case ' ': // pause/play toggle
-      if ( TRACK_LOADED ) {
-        if ( audio.isPlaying() ) {
-          sliderProgress.setValueLabel("PAUSED");
-          audio.pause();
-          closeMIDINotes();
-        } else {
-          sliderProgress.setValueLabel("PLAYING");
-          audio.play();
-        }
-      }
       break;
       
     case 'm': // mute audio toggle
-      if ( audio.isMuted() ) {
-        audio.unmute();
-      } else {
-        audio.mute();
-      }
       break;
       
     case 'n': // mute midi toggle
@@ -91,25 +76,7 @@ void controlEvent(ControlEvent event) {
       case(2):
         break;
       case(3): // Progress Slider
-        // This event is triggered whenever the slider is updated. It is a progress bar updated every buffer iteration.
-        cuePosition = (int)(event.getController().getValue());
-        
-        if ( cuePosition < lastPosition || cuePosition - lastPosition > 2000 ) { // seeked backwards or forwards
-          audio.pause();
-          closeMIDINotes();
-          frameNumber = round((float)cuePosition / 1000f * (float)audio.sampleRate() / (float)bufferSize);
-          audio.cue(cuePosition);
-          audio.play(); 
-        }
-        
-        lastPosition = cuePosition;
-
         break;
-    }
-    
-    // File List IDs
-    if ( event.getController().getId() >= 100 ) {
-      openAudioFile(audioFiles[(int)event.getController().getValue()]);
     }
   }
 }

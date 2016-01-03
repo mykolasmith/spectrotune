@@ -50,14 +50,14 @@ float binWeight(int type, float x) {
 }
 
 void normalizePCP() {
-  float pcpMax = max(pcp[frameNumber]);
+  //float pcpMax = max(pcp[frameNumber]);
   for ( int k = 0; k < 12; k++ ) {
-    pcp[frameNumber][k] /= pcpMax;
+    //pcp[frameNumber][k] /= pcpMax;
   }
 }
 
 void zeroPadBuffer() {
-  for (int i = 0; i < fftBufferSize; i++) {
+  for (int i = 0; i < bufferSize; i++) {
     buffer[i] = 0f;
   }  
 }
@@ -66,8 +66,8 @@ void precomputeOctaveRegions() {
   for ( int j = 0; j < 8; j++) {
     fftBinStart[j] = 0;
     fftBinEnd[j] = 0;
-    for ( int k = 0; k < fftSize; k++) {
-      float freq = k / (float)fftBufferSize * audio.sampleRate();
+    for ( int k = 0; k < bufferSize; k++) {
+      float freq = k / (float)bufferSize * sampleRate;
       if ( freq >= octaveLowRange(j) && fftBinStart[j] == 0 ) {
         fftBinStart[j] = k;
       } else if ( freq > octaveHighRange(j) && fftBinEnd[j] == 0 ) {
@@ -76,63 +76,13 @@ void precomputeOctaveRegions() {
       }
     }
   }
-  println("Start: " + fftBinStart[0] + " End: " + fftBinEnd[7] + " (" + fftSize + " total)");
+  println("Start: " + fftBinStart[0] + " End: " + fftBinEnd[7] + " (" + bufferSize + " total)");
 }
 
 void openAudioFile(String audioFile) {
-  if ( TRACK_LOADED ) {
-    audio.pause();
-    audio.close();
-    
-    loadedAudioFile = "";
-    
-    sliderProgress.setValue(0);
-    sliderProgress.setMax(0);
-   
-    TRACK_LOADED = false; 
-  }
- 
-  audio = minim.loadFile("/music/" + audioFile, bufferSize);
-  
-  audio.addListener(sampler);
-  
-  frames = round((float)audio.length() / 1000f * (float)audio.sampleRate() / (float)bufferSize);
-  
-  println("\nAudio source: " + audioFile + " " + audio.length() / 1000 + " seconds (" + frames + " frames)");
-  println("Time size: " + bufferSize + " bytes / Sample rate: " + audio.sampleRate() / 1000f + "kHz");
-  println("FFT bandwidth: " + (2.0 / fftBufferSize) * ((float)audio.sampleRate() / 2.0) + "Hz");
-  
-  if (audio.type() == Minim.STEREO) {      
-    println("Channels: 2 (STEREO)\n");
-  } else {
-    println("Channels: 1 (MONO)\n");
-  }
-  
-  fft = new FFT(fftBufferSize, audio.sampleRate());
-  
-  // Setup Arrays
-  notes = new Note[frames][0];
-  pcp = new float[frames][12];
-  
-  precomputeOctaveRegions();
-  
-  sliderProgress.setMax(audio.length());
-  cuePosition = audio.position();
-  
-  // Switch back to general tab
-  controlP5.getWindow(this).activateTab("default");
-  
-  frameNumber = -1;
-  
-  loadedAudioFile = audioFile;
-  TRACK_LOADED = true;
-  audio.play();
+  println(audioFile);
 }
 
 boolean isLoaded() {
-  if ( TRACK_LOADED && frameNumber > -1 ) {
-    return true;
-  } else {
-    return false;
-  }
+  return true;
 }

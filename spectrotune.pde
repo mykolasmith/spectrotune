@@ -9,7 +9,8 @@ import java.lang.reflect.InvocationTargetException;
 //int bufferSize = 16384;
 //int bufferSize = 8192;
 //int bufferSize = 4096;
-int bufferSize = 2048;
+int bufferSize = 1024;
+int sampleRate = 44100;
 //int bufferSize = 1024;
 //int bufferSize = 512;
 
@@ -17,11 +18,6 @@ int bufferSize = 2048;
 // octaves 0 .. 2 for example, zero padding is nessessary to improve the interpolation resolution of the FFT
 // otherwise FFT bins will be quite large making it impossible to distinguish between low octave notes which
 // are seperated by only a few Hz in these ranges.
-
-int ZERO_PAD_MULTIPLIER = 4; // zero padding adds interpolation resolution to the FFT, it also dilutes the magnitude of the bins
-
-int fftBufferSize = bufferSize * ZERO_PAD_MULTIPLIER;
-int fftSize = fftBufferSize/2;
 
 int PEAK_THRESHOLD = 50; // default peak threshold
 
@@ -31,11 +27,8 @@ int PEAK_THRESHOLD = 50; // default peak threshold
 int keyboardStart = 12; // 12 is octave C0
 int keyboardEnd = 108;
 
-String[] audioFiles;
-String loadedAudioFile;
-
 Minim minim;
-AudioPlayer audio;
+AudioInput in;
 Sampler sampler;
 ControlP5 controlP5;
 Window window;
@@ -62,12 +55,6 @@ Textlabel labelThreshold;
 FFT fft;
 
 MidiOutput midiOut;
-
-int frames; // total horizontal audio frames
-int frameNumber = -1; // current audio frame
-
-int cuePosition; // cue position in miliseconds
-int lastPosition = 0;
 
 PImage bg;
 PImage whiteKey;
@@ -285,14 +272,7 @@ void draw() {
 }
 
 void stop() {
-  if ( audio != null ) {
-    audio.pause();
-    TRACK_LOADED = false;
-    audio.close();
-  }
-  
   closeMIDINotes(); // close any open MIDI notes
-  
   minim.stop();
   super.stop();
 }
