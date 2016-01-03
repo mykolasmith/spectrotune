@@ -84,15 +84,15 @@ void keyPressed() {
 // ControlP5 events
 void controlEvent(ControlEvent event) {
   if ( event.isController() ) {
-    switch(event.controller().id()) {
+    switch(event.getController().getId()) {
       case(1):
-        PEAK_THRESHOLD = (int)(event.controller().value());
+        PEAK_THRESHOLD = (int)(event.getController().getValue());
         break;
       case(2):
         break;
       case(3): // Progress Slider
         // This event is triggered whenever the slider is updated. It is a progress bar updated every buffer iteration.
-        cuePosition = (int)(event.controller().value());
+        cuePosition = (int)(event.getController().getValue());
         
         if ( cuePosition < lastPosition || cuePosition - lastPosition > 2000 ) { // seeked backwards or forwards
           audio.pause();
@@ -108,8 +108,8 @@ void controlEvent(ControlEvent event) {
     }
     
     // File List IDs
-    if ( event.controller().id() >= 100 ) {
-      openAudioFile(audioFiles[(int)event.controller().value()]);
+    if ( event.getController().getId() >= 100 ) {
+      openAudioFile(audioFiles[(int)event.getController().getValue()]);
     }
   }
 }

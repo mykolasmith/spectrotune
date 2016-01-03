@@ -8,7 +8,7 @@ void render() {
     }
   }
   
-  String selectedTab = controlP5.window(this).currentTab().name();
+  String selectedTab = controlP5.getWindow().getCurrentTab().getName();
   
   if ( selectedTab == "windowing") {
     renderWindowCurve();

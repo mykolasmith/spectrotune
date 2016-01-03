@@ -20,7 +20,7 @@ class Sampler implements AudioListener
     
     // Apply balance to sample buffer storing in left mono buffer
     for ( int i = 0; i < bufferSize; i++ ) {
-      int balanceValue = (int)sliderBalance.value();
+      int balanceValue = (int)sliderBalance.getValue();
       if ( balanceValue > 0 ) {
         float balancePercent = (100 - balanceValue) / 100.0; 
         left[i] = (left[i] / 2f * balancePercent) + right[i] / 2f;

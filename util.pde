@@ -92,7 +92,7 @@ void openAudioFile(String audioFile) {
     TRACK_LOADED = false; 
   }
  
-  audio = minim.loadFile(sketchPath + "/music/" + audioFile, bufferSize);
+  audio = minim.loadFile("/music/" + audioFile, bufferSize);
   
   audio.addListener(sampler);
   
@@ -120,7 +120,7 @@ void openAudioFile(String audioFile) {
   cuePosition = audio.position();
   
   // Switch back to general tab
-  controlP5.window(this).activateTab("default");
+  controlP5.getWindow(this).activateTab("default");
   
   frameNumber = -1;
   

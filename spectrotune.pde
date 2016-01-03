@@ -214,7 +214,7 @@ void setup() {
   oct6.moveTo(tabMIDI);
   oct7.moveTo(tabMIDI);
   
-  Radio radioMidiDevice = controlP5.addRadio("radioMidiDevice", 36, 30);
+  RadioButton radioMidiDevice = controlP5.addRadioButton("radioMidiDevice", 36, 30);
   for(int i = 0; i < RWMidi.getOutputDevices().length; i++) {
     radioMidiDevice.add(RWMidi.getOutputDevices()[i] + "", i);
   }
@@ -223,20 +223,20 @@ void setup() {
   // WINDOWING TAB
   controlP5.addTextlabel("labelWindowing", "WINDOWING", 380, 10).moveTo(tabWindowing);
 
-  Radio radioWindow = controlP5.addRadio("radioWindow", 380, 30);
-  radioWindow.add("RECTANGULAR", Window.RECTANGULAR);
-  radioWindow.add("HAMMING", Window.HAMMING);
-  radioWindow.add("HANN", Window.HANN);
-  radioWindow.add("COSINE", Window.COSINE);
-  radioWindow.add("TRIANGULAR", Window.TRIANGULAR);
-  radioWindow.add("BLACKMAN", Window.BLACKMAN);
-  radioWindow.add("GAUSS", Window.GAUSS);
-  radioWindow.moveTo(tabWindowing);
+  controlP5.addRadioButton("radioWindow", 380, 30)
+    .addItem("RECTANGULAR", Window.RECTANGULAR)
+    .addItem("HAMMING", Window.HAMMING)
+    .addItem("HANN", Window.HANN)
+    .addItem("COSINE", Window.COSINE)
+    .addItem("TRIANGULAR", Window.TRIANGULAR)
+    .addItem("BLACKMAN", Window.BLACKMAN)
+    .addItem("GAUSS", Window.GAUSS)
+    .moveTo(tabWindowing);
   //radioWindow.activate("HAMMING"); // set default
   
   controlP5.addTextlabel("labelSmoothing", "SMOOTHING", 380, 10).moveTo(tabSmoothing);
   
-  Radio radioSmooth = controlP5.addRadio("radioSmooth", 380, 30);
+  RadioButton radioSmooth = controlP5.addRadioButton("radioSmooth", 380, 30);
   radioSmooth.add("NONE", Smooth.NONE);
   radioSmooth.add("RECTANGLE", Smooth.RECTANGLE);
   radioSmooth.add("TRIANGLE", Smooth.TRIANGLE);
@@ -250,26 +250,12 @@ void setup() {
 
   // FILE TAB -- think about adding sDrop support.. may be better
 
-  // File list
-  ScrollList listFiles = controlP5.addScrollList("listFiles", 36, 40, 280, 280);  
-  listFiles.moveTo(tabFiles);
-  listFiles.setLabel("Open File");
-  File file = new File(sketchPath + "/music");
- 
-  if ( file.isDirectory() ) {
-    audioFiles = file.list();
-    
-    for (int i = 0; i < audioFiles.length; i++) {
-      controlP5.Button b = listFiles.addItem(audioFiles[i], i);
-      b.setId(100 + i);
-    }
-  }
   
   controlP5.addTextlabel("labelFFT", "FFT", 380, 10).moveTo(tabFFT);
   
   // FFT bin distance weighting radios
   //controlP5.addTextlabel("labelWeight", "FFT WEIGHT", 380, 30);
-  Radio radioWeight = controlP5.addRadio("radioWeight", 380, 30);
+  RadioButton radioWeight = controlP5.addRadioButton("radioWeight", 380, 30);
   radioWeight.add("UNIFORM (OFF)", UNIFORM); // default
   radioWeight.add("DISCRETE", DISCRETE);
   radioWeight.add("LINERAR", LINEAR);
