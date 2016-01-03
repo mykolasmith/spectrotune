@@ -1,11 +1,6 @@
 void keyPressed() {
   switch(key) {
-    case ' ': // pause/play toggle
-      break;
-      
-    case 'm': // mute audio toggle
-      break;
-      
+    
     case 'n': // mute midi toggle
       MIDI_TOGGLE = !MIDI_TOGGLE;
       toggleMIDI.setState(MIDI_TOGGLE);
