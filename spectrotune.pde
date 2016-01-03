@@ -9,7 +9,7 @@ import java.lang.reflect.InvocationTargetException;
 //int bufferSize = 16384;
 //int bufferSize = 8192;
 //int bufferSize = 4096;
-int bufferSize = 1024;
+int bufferSize = 2048;
 int sampleRate = 44100;
 //int bufferSize = 1024;
 //int bufferSize = 512;
