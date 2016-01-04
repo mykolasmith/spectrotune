@@ -205,6 +205,7 @@ void setup() {
     radioMidiDevice.add(RWMidi.getOutputDevices()[i] + "", i);
   }
   radioMidiDevice.moveTo(tabMIDI);
+  radioMidiDevice.activate(0);
   
   // WINDOWING TAB
   controlP5.addTextlabel("labelWindowing", "WINDOWING", 380, 10).moveTo(tabWindowing);
