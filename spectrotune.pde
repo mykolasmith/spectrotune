@@ -218,21 +218,21 @@ void setup() {
     .addItem("BLACKMAN", Window.BLACKMAN)
     .addItem("GAUSS", Window.GAUSS)
     .moveTo(tabWindowing);
-  //radioWindow.activate("HAMMING"); // set default
   
-  controlP5.addTextlabel("labelSmoothing", "SMOOTHING", 380, 10).moveTo(tabSmoothing);
+  controlP5.addTextlabel("labelSmoothing", "SMOOTHING", 380, 10)
+    .moveTo(tabSmoothing);
   
-  RadioButton radioSmooth = controlP5.addRadioButton("radioSmooth", 380, 30);
-  radioSmooth.add("NONE", Smooth.NONE);
-  radioSmooth.add("RECTANGLE", Smooth.RECTANGLE);
-  radioSmooth.add("TRIANGLE", Smooth.TRIANGLE);
-  radioSmooth.add("AJACENT AVERAGE", Smooth.ADJAVG);
-  radioSmooth.moveTo(tabSmoothing);
+  controlP5.addRadioButton("radioSmooth", 380, 30)
+    .addItem("NONE", Smooth.NONE)
+    .addItem("RECTANGLE", Smooth.RECTANGLE)
+    .addItem("TRIANGLE", Smooth.TRIANGLE)
+    .addItem("AJACENT AVERAGE", Smooth.ADJAVG)
+    .moveTo(tabSmoothing);
   
   // Smoothing points slider
-  Slider sliderSmoothing = controlP5.addSlider("Points", 1, 10, SMOOTH_POINTS, 380, 100, 75, 10);
-  sliderSmoothing.setId(2);
-  sliderSmoothing.moveTo(tabSmoothing);
+  controlP5.addSlider("Points", 1, 10, SMOOTH_POINTS, 380, 100, 75, 10)
+    .setId(2)
+    .moveTo(tabSmoothing);
 
   // FILE TAB -- think about adding sDrop support.. may be better
 
@@ -241,23 +241,20 @@ void setup() {
   
   // FFT bin distance weighting radios
   //controlP5.addTextlabel("labelWeight", "FFT WEIGHT", 380, 30);
-  RadioButton radioWeight = controlP5.addRadioButton("radioWeight", 380, 30);
-  radioWeight.add("UNIFORM (OFF)", UNIFORM); // default
-  radioWeight.add("DISCRETE", DISCRETE);
-  radioWeight.add("LINERAR", LINEAR);
-  radioWeight.add("QUADRATIC", QUADRATIC);
-  radioWeight.add("EXPONENTIAL", EXPONENTIAL);
-  radioWeight.moveTo(tabFFT);
+  controlP5.addRadioButton("radioWeight", 380, 30)
+    .addItem("UNIFORM (OFF)", UNIFORM) // default
+    .addItem("DISCRETE", DISCRETE)
+    .addItem("LINERAR", LINEAR)
+    .addItem("QUADRATIC", QUADRATIC)
+    .addItem("EXPONENTIAL", EXPONENTIAL)
+    .moveTo(tabFFT);
   
-  labelThreshold = controlP5.addTextlabel("labelThreshold", "THRESHOLD", PEAK_THRESHOLD + 26, 60);
-  labelThreshold.moveTo(tabFFT);
+  controlP5.addTextlabel("labelThreshold", "THRESHOLD", PEAK_THRESHOLD + 26, 60)
+    .moveTo(tabFFT);
   
-  // GLOBAL UI
-      
+  // GLOBAL UI  
   textFont(createFont("Arial", 10, true));
-  
   rectMode(CORNERS);
-  
   smooth();
 }
 
