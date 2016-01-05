@@ -63,6 +63,7 @@ int fftBufferSize = bufferSize;
 int fftSize = fftBufferSize/2;
 
 Note[] notes;
+float[] pcp;
 
 float[] buffer = new float[fftBufferSize];
 float[] spectrum = new float[fftSize];

@@ -24,7 +24,7 @@ class Sampler implements AudioListener
     float[] binDistance = new float[bufferSize];
     float[] freq = new float[bufferSize];
     
-    float[] pcp = new float[bufferSize];
+    pcp = new float[bufferSize];
     notes = new Note[128];
     
     float freqLowRange = octaveLowRange(0);
