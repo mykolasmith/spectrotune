@@ -65,7 +65,7 @@ public class Smooth {
       smoothed = fft.getBand(i) * weight;
       
       for(int j = 0; j < sidePoints; j ++) {
-	weight--;
+        weight--;
         smoothed += (fft.getBand(i-j) * weight) + (fft.getBand(i+j) * weight);
         divider += (weight * 2);
       }
