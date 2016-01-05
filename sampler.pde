@@ -1,6 +1,5 @@
 class Sampler implements AudioListener
 {
-  private Note[] notesOpen;
   
   Sampler() {}
   
@@ -24,8 +23,10 @@ class Sampler implements AudioListener
     
     float[] binDistance = new float[bufferSize];
     float[] freq = new float[bufferSize];
+    
     float[] pcp = new float[bufferSize];
-      
+    notes = new Note[128];
+    
     float freqLowRange = octaveLowRange(0);
     float freqHighRange = octaveHighRange(7);
     
@@ -128,7 +129,8 @@ class Sampler implements AudioListener
           peak[k] = PEAK;
           
           Note note = new Note(freq[k], spectrum[k]);
-          midiOut.sendNoteOn(note.channel, note.pitch, note.velocity);
+          notes = (Note[])append(notes, note);
+          //midiOut.sendNoteOn(note.channel, note.pitch, note.velocity);
           
           // Track Peaks and Levels in this pass so we can detect harmonics 
           foundPeak = append(foundPeak, freq[k]);

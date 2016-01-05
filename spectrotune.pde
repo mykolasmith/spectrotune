@@ -62,6 +62,8 @@ PImage octaveBtn;
 int fftBufferSize = bufferSize;
 int fftSize = fftBufferSize/2;
 
+Note[] notes;
+
 float[] buffer = new float[fftBufferSize];
 float[] spectrum = new float[fftSize];
 int[] peak = new int[fftSize];
@@ -164,12 +166,9 @@ void setup() {
     .setLabel("Harmonics Filter")
     .setColorForeground(0x9000ffc8)
     .setColorActive(0xff00ffc8);
-  
-  ui.addSlider("balance", -100, 100, 0, 380, 120, 50, 10)
-    .setValueLabel(" CENTER");
     
   // Peak detect threshold slider
-  ui.addSlider("Threshold", 0, 255, PEAK_THRESHOLD, 380, 140, 75, 10)
+  ui.addSlider("Threshold", 0, 255, PEAK_THRESHOLD, 380, 140, 50, 10)
     .setId(1);
   
   // MIDI TAB
@@ -207,7 +206,7 @@ void setup() {
     radioMidiDevice.addItem(RWMidi.getOutputDevices()[i] + "", i);
   }
   radioMidiDevice.moveTo(tabMIDI);
-  radioMidiDevice.activate(0);
+  radioMidiDevice.activate(1);
   
   // WINDOWING TAB
   ui.addTextlabel("labelWindowing", "WINDOWING", 380, 10).moveTo(tabWindowing);
