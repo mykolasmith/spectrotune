@@ -2,45 +2,19 @@
 
 class Sampler implements AudioListener
 {
-  private float[] left;
-  private float[] right;
   private Note[] notesOpen;
   
-  Sampler() {
-    left = null; 
-    right = null;
+  Sampler() {}
+  
+  synchronized void samples(float[] samples) {
+    process(samples);
   }
   
-  synchronized void samples(float[] sampleBuffer) {
-    left = sampleBuffer;
-    
-    process();
-  }
+  synchronized void samples(float[] left, float[] right) {}
   
-  synchronized void samples(float[] sampleBufferLeft, float[] sampleBufferRight) {  
-    left = sampleBufferLeft;
-    right = sampleBufferRight;
-    
-    // Apply balance to sample buffer storing in left mono buffer
-    for ( int i = 0; i < bufferSize; i++ ) {
-      int balanceValue = (int)sliderBalance.getValue();
-      if ( balanceValue > 0 ) {
-        float balancePercent = (100 - balanceValue) / 100.0; 
-        left[i] = (left[i] / 2f * balancePercent) + right[i] / 2f;
-      } else if ( balanceValue < 0 ) {
-        float balancePercent = (100 - balanceValue * -1) / 100.0; 
-        left[i] = left[i] / 2f + (right[i] / 2f * balancePercent);
-      } else {
-        left[i] = (left[i] + right[i]) / 2f;
-      }
-    }
-    
-    process();
-  }
-  
-  void process() {
-    window.transform(left); // add window to samples
-    arrayCopy(left, 0, buffer, 0, left.length);
+  void process(float[] samples) {
+    window.transform(samples); // add window to samples
+    arrayCopy(samples, 0, buffer, 0, samples.length);
     analyze();
     outputMIDINotes();      
   }
