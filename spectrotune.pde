@@ -30,7 +30,7 @@ int keyboardEnd = 108;
 Minim minim;
 AudioInput in;
 Sampler sampler;
-ControlP5 controlP5;
+ControlP5 ui;
 Window window;
 Smooth smoother;
 
@@ -66,7 +66,6 @@ float[] buffer = new float[fftBufferSize];
 float[] spectrum = new float[fftSize];
 int[] peak = new int[fftSize];
 
-float[] pcp;
 int[] fftBinStart = new int[8]; 
 int[] fftBinEnd = new int[8];
 float[] scaleProfile = new float[12];
@@ -130,21 +129,21 @@ void setup() {
   blackKey = loadImage("blackkey.png");
   octaveBtn = loadImage("octavebutton.png");
    
-  // ControlP5 UI
-  controlP5 = new ControlP5(this);
+  // ui UI
+  ui = new ControlP5(this);
   
-  tabDefault = controlP5.addTab("default").activateEvent(true);
-  tabFFT = controlP5.addTab("FFT").activateEvent(true);
-  tabWindowing = controlP5.addTab("windowing").activateEvent(true);
-  tabSmoothing = controlP5.addTab("smoothing").activateEvent(true);
-  tabMIDI = controlP5.addTab("midi").activateEvent(true);
+  tabDefault = ui.addTab("default").activateEvent(true);
+  tabFFT = ui.addTab("FFT").activateEvent(true);
+  tabWindowing = ui.addTab("windowing").activateEvent(true);
+  tabSmoothing = ui.addTab("smoothing").activateEvent(true);
+  tabMIDI = ui.addTab("midi").activateEvent(true);
 
   // GENERAL TAB
   tabDefault.setLabel("GENERAL");
-  controlP5.addTextlabel("labelGeneral", "GENERAL", 380, 10).moveTo("default");
+  ui.addTextlabel("labelGeneral", "GENERAL", 380, 10).moveTo("default");
   
   // Pitch class profile toggle
-  controlP5.addToggle("togglePCP", PCP_TOGGLE)
+  ui.addToggle("togglePCP", PCP_TOGGLE)
     .setPosition(380, 30)
     .setSize(10,10)
     .setLabel("Pitch Class Profile")
@@ -152,46 +151,46 @@ void setup() {
     .setColorActive(0xff00ffc8);
   
    // Pitch class profile toggle
-  controlP5.addToggle("toggleLinearEQ", LINEAR_EQ_TOGGLE)
+  ui.addToggle("toggleLinearEQ", LINEAR_EQ_TOGGLE)
     .setPosition(380,60)
     .setSize(10,10)
     .setLabel("Linear EQ")
     .setColorForeground(0x8000ffc8)
     .setColorActive(0xff00ffc8);
   
-  controlP5.addToggle("toggleHarmonics", HARMONICS_TOGGLE)
+  ui.addToggle("toggleHarmonics", HARMONICS_TOGGLE)
     .setPosition(380, 90)
     .setSize(10, 10)
     .setLabel("Harmonics Filter")
     .setColorForeground(0x9000ffc8)
     .setColorActive(0xff00ffc8);
   
-  controlP5.addSlider("balance", -100, 100, 0, 380, 120, 50, 10)
+  ui.addSlider("balance", -100, 100, 0, 380, 120, 50, 10)
     .setValueLabel(" CENTER");
     
   // Peak detect threshold slider
-  controlP5.addSlider("Threshold", 0, 255, PEAK_THRESHOLD, 380, 140, 75, 10)
+  ui.addSlider("Threshold", 0, 255, PEAK_THRESHOLD, 380, 140, 75, 10)
     .setId(1);
   
   // MIDI TAB
-  controlP5.addTextlabel("labelMIDI", "MIDI", 380, 10).moveTo(tabMIDI);
+  ui.addTextlabel("labelMIDI", "MIDI", 380, 10).moveTo(tabMIDI);
   
   // MIDI output toggle
-  controlP5.addToggle("toggleMIDI", MIDI_TOGGLE)
+  ui.addToggle("toggleMIDI", MIDI_TOGGLE)
     .setPosition(380, 30)
     .setSize(10,10)
     .setLabel("MIDI OUTPUT")
     .moveTo(tabMIDI);
   
-  Numberbox oct0 = controlP5.addNumberbox("oct0", 1, 380, 60, 20, 14);
-  Numberbox oct1 = controlP5.addNumberbox("oct1", 1, 410, 60, 20, 14); 
-  Numberbox oct2 = controlP5.addNumberbox("oct2", 1, 440, 60, 20, 14);
-  Numberbox oct3 = controlP5.addNumberbox("oct3", 1, 470, 60, 20, 14);
+  Numberbox oct0 = ui.addNumberbox("oct0", 1, 380, 60, 20, 14);
+  Numberbox oct1 = ui.addNumberbox("oct1", 1, 410, 60, 20, 14); 
+  Numberbox oct2 = ui.addNumberbox("oct2", 1, 440, 60, 20, 14);
+  Numberbox oct3 = ui.addNumberbox("oct3", 1, 470, 60, 20, 14);
   
-  Numberbox oct4 = controlP5.addNumberbox("oct4", 1, 380, 90, 20, 14);
-  Numberbox oct5 = controlP5.addNumberbox("oct5", 1, 410, 90, 20, 14); 
-  Numberbox oct6 = controlP5.addNumberbox("oct6", 1, 440, 90, 20, 14);
-  Numberbox oct7 = controlP5.addNumberbox("oct7", 1, 470, 90, 20, 14);
+  Numberbox oct4 = ui.addNumberbox("oct4", 1, 380, 90, 20, 14);
+  Numberbox oct5 = ui.addNumberbox("oct5", 1, 410, 90, 20, 14); 
+  Numberbox oct6 = ui.addNumberbox("oct6", 1, 440, 90, 20, 14);
+  Numberbox oct7 = ui.addNumberbox("oct7", 1, 470, 90, 20, 14);
   
   // move MIDI Channels to midi tab
   oct0.moveTo(tabMIDI);
@@ -203,7 +202,7 @@ void setup() {
   oct6.moveTo(tabMIDI);
   oct7.moveTo(tabMIDI);
   
-  RadioButton radioMidiDevice = controlP5.addRadioButton("radioMidiDevice", 36, 30);
+  RadioButton radioMidiDevice = ui.addRadioButton("radioMidiDevice", 36, 30);
   for(int i = 0; i < RWMidi.getOutputDevices().length; i++) {
     radioMidiDevice.addItem(RWMidi.getOutputDevices()[i] + "", i);
   }
@@ -211,9 +210,9 @@ void setup() {
   radioMidiDevice.activate(0);
   
   // WINDOWING TAB
-  controlP5.addTextlabel("labelWindowing", "WINDOWING", 380, 10).moveTo(tabWindowing);
+  ui.addTextlabel("labelWindowing", "WINDOWING", 380, 10).moveTo(tabWindowing);
 
-  controlP5.addRadioButton("radioWindow", 380, 30)
+  ui.addRadioButton("radioWindow", 380, 30)
     .addItem("RECTANGULAR", Window.RECTANGULAR)
     .addItem("HAMMING", Window.HAMMING)
     .addItem("HANN", Window.HANN)
@@ -223,10 +222,10 @@ void setup() {
     .addItem("GAUSS", Window.GAUSS)
     .moveTo(tabWindowing);
   
-  controlP5.addTextlabel("labelSmoothing", "SMOOTHING", 380, 10)
+  ui.addTextlabel("labelSmoothing", "SMOOTHING", 380, 10)
     .moveTo(tabSmoothing);
   
-  controlP5.addRadioButton("radioSmooth", 380, 30)
+  ui.addRadioButton("radioSmooth", 380, 30)
     .addItem("NONE", Smooth.NONE)
     .addItem("RECTANGLE", Smooth.RECTANGLE)
     .addItem("TRIANGLE", Smooth.TRIANGLE)
@@ -234,18 +233,18 @@ void setup() {
     .moveTo(tabSmoothing);
   
   // Smoothing points slider
-  controlP5.addSlider("Points", 1, 10, SMOOTH_POINTS, 380, 100, 75, 10)
+  ui.addSlider("Points", 1, 10, SMOOTH_POINTS, 380, 100, 75, 10)
     .setId(2)
     .moveTo(tabSmoothing);
 
   // FILE TAB -- think about adding sDrop support.. may be better
 
   
-  controlP5.addTextlabel("labelFFT", "FFT", 380, 10).moveTo(tabFFT);
+  ui.addTextlabel("labelFFT", "FFT", 380, 10).moveTo(tabFFT);
   
   // FFT bin distance weighting radios
-  //controlP5.addTextlabel("labelWeight", "FFT WEIGHT", 380, 30);
-  controlP5.addRadioButton("radioWeight", 380, 30)
+  //ui.addTextlabel("labelWeight", "FFT WEIGHT", 380, 30);
+  ui.addRadioButton("radioWeight", 380, 30)
     .addItem("UNIFORM (OFF)", UNIFORM) // default
     .addItem("DISCRETE", DISCRETE)
     .addItem("LINERAR", LINEAR)
@@ -253,7 +252,7 @@ void setup() {
     .addItem("EXPONENTIAL", EXPONENTIAL)
     .moveTo(tabFFT);
   
-  controlP5.addTextlabel("labelThreshold", "THRESHOLD", PEAK_THRESHOLD + 26, 60)
+  ui.addTextlabel("labelThreshold", "THRESHOLD", PEAK_THRESHOLD + 26, 60)
     .moveTo(tabFFT);
   
   // GLOBAL UI  

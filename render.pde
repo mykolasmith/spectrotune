@@ -7,8 +7,8 @@ void render() {
     }
   }
   
-  String selectedTab = controlP5.getWindow().getCurrentTab().getName();
-  
+  String selectedTab = ui.getWindow().getCurrentTab().getName();
+
   if ( selectedTab == "windowing") {
     renderWindowCurve();
   } else if ( selectedTab == "FFT" ) {
@@ -129,7 +129,7 @@ void renderFFT() {
     }
   }
   stroke(255);
-  controlP5.getController("labelThreshold").setPosition(PEAK_THRESHOLD + 26, 60);
+  ui.getController("labelThreshold").setPosition(PEAK_THRESHOLD + 26, 60);
   line(PEAK_THRESHOLD + 24, 0, PEAK_THRESHOLD + 24, height);
   noStroke();
 }

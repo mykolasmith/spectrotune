@@ -51,7 +51,7 @@ void keyPressed() {
   switch(keyCode) {
     case RIGHT:
       PEAK_THRESHOLD += 5;
-      sliderThreshold.setValue(PEAK_THRESHOLD);
+      ui.getController("sliderThreshold").setValue(PEAK_THRESHOLD);
       break;
       
     case LEFT:
