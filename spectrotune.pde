@@ -45,7 +45,6 @@ Toggle togglePCP;
 Toggle toggleMIDI;
 Toggle toggleHarmonics;
 
-Slider sliderProgress;
 Slider sliderBalance;
 Slider sliderThreshold;
 
@@ -67,13 +66,9 @@ float[] buffer = new float[fftBufferSize];
 float[] spectrum = new float[fftSize];
 int[] peak = new int[fftSize];
 
-float[][] pcp;
-
-Note[][] notes;
-
+float[] pcp;
 int[] fftBinStart = new int[8]; 
 int[] fftBinEnd = new int[8];
-
 float[] scaleProfile = new float[12];
 
 float linearEQIntercept = 1f; // default no eq boost
@@ -107,7 +102,7 @@ public static final int SLOPEUP = 4;
 public static final int SLOPEDOWN = 5;
 
 void setup() {
-  size(510, 288, OPENGL);
+  size(510, 288);
   
   //frameRate(framesPerSecond); // lock framerate
   
@@ -149,36 +144,44 @@ void setup() {
   controlP5.addTextlabel("labelGeneral", "GENERAL", 380, 10).moveTo("default");
   
   // Pitch class profile toggle
-  togglePCP = controlP5.addToggle("togglePCP", PCP_TOGGLE, 380, 30, 10,10);
-  togglePCP.setLabel("Pitch Class Profile");
-  togglePCP.setColorForeground(0x8000ffc8);
-  togglePCP.setColorActive(0xff00ffc8);
+  controlP5.addToggle("togglePCP", PCP_TOGGLE)
+    .setPosition(380, 30)
+    .setSize(10,10)
+    .setLabel("Pitch Class Profile")
+    .setColorForeground(0x8000ffc8)
+    .setColorActive(0xff00ffc8);
   
    // Pitch class profile toggle
-  toggleLinearEQ = controlP5.addToggle("toggleLinearEQ", LINEAR_EQ_TOGGLE, 380,60, 10,10);
-  toggleLinearEQ.setLabel("Linear EQ");
-  toggleLinearEQ.setColorForeground(0x8000ffc8);
-  toggleLinearEQ.setColorActive(0xff00ffc8);
+  controlP5.addToggle("toggleLinearEQ", LINEAR_EQ_TOGGLE)
+    .setPosition(380,60)
+    .setSize(10,10)
+    .setLabel("Linear EQ")
+    .setColorForeground(0x8000ffc8)
+    .setColorActive(0xff00ffc8);
   
-  toggleHarmonics = controlP5.addToggle("toggleHarmonics", HARMONICS_TOGGLE, 380, 90, 10, 10);
-  toggleHarmonics.setLabel("Harmonics Filter");
-  toggleHarmonics.setColorForeground(0x9000ffc8);
-  toggleHarmonics.setColorActive(0xff00ffc8);
+  controlP5.addToggle("toggleHarmonics", HARMONICS_TOGGLE)
+    .setPosition(380, 90)
+    .setSize(10, 10)
+    .setLabel("Harmonics Filter")
+    .setColorForeground(0x9000ffc8)
+    .setColorActive(0xff00ffc8);
   
-  sliderBalance = controlP5.addSlider("balance", -100, 100, 0, 380, 120, 50, 10);
-  sliderBalance.setValueLabel(" CENTER");
+  controlP5.addSlider("balance", -100, 100, 0, 380, 120, 50, 10)
+    .setValueLabel(" CENTER");
     
   // Peak detect threshold slider
-  sliderThreshold = controlP5.addSlider("Threshold", 0, 255, PEAK_THRESHOLD, 380, 140, 75, 10);
-  sliderThreshold.setId(1);
+  controlP5.addSlider("Threshold", 0, 255, PEAK_THRESHOLD, 380, 140, 75, 10)
+    .setId(1);
   
   // MIDI TAB
   controlP5.addTextlabel("labelMIDI", "MIDI", 380, 10).moveTo(tabMIDI);
   
   // MIDI output toggle
-  toggleMIDI = controlP5.addToggle("toggleMIDI", MIDI_TOGGLE, 380, 30, 10,10);
-  toggleMIDI.setLabel("MIDI OUTPUT");
-  toggleMIDI.moveTo(tabMIDI);
+  controlP5.addToggle("toggleMIDI", MIDI_TOGGLE)
+    .setPosition(380, 30)
+    .setSize(10,10)
+    .setLabel("MIDI OUTPUT")
+    .moveTo(tabMIDI);
   
   Numberbox oct0 = controlP5.addNumberbox("oct0", 1, 380, 60, 20, 14);
   Numberbox oct1 = controlP5.addNumberbox("oct1", 1, 410, 60, 20, 14); 
@@ -202,7 +205,7 @@ void setup() {
   
   RadioButton radioMidiDevice = controlP5.addRadioButton("radioMidiDevice", 36, 30);
   for(int i = 0; i < RWMidi.getOutputDevices().length; i++) {
-    radioMidiDevice.add(RWMidi.getOutputDevices()[i] + "", i);
+    radioMidiDevice.addItem(RWMidi.getOutputDevices()[i] + "", i);
   }
   radioMidiDevice.moveTo(tabMIDI);
   radioMidiDevice.activate(0);
