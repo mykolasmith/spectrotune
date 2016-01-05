@@ -1,5 +1,3 @@
-
-
 class Sampler implements AudioListener
 {
   private Note[] notesOpen;
@@ -26,6 +24,7 @@ class Sampler implements AudioListener
     
     float[] binDistance = new float[bufferSize];
     float[] freq = new float[bufferSize];
+    float[] pcp = new float[bufferSize];
       
     float freqLowRange = octaveLowRange(0);
     float freqHighRange = octaveHighRange(7);
@@ -60,19 +59,18 @@ class Sampler implements AudioListener
         }
         
         // Sum PCP bins
-       // pcp[frameNumber][freqToPitch(freq[k]) % 12] += pow(fft.getBand(k), 2) * binWeight(WEIGHT_TYPE, binDistance[k]);
+        pcp[freqToPitch(freq[k]) % 12] += pow(fft.getBand(k), 2) * binWeight(WEIGHT_TYPE, binDistance[k]);
       }
     }
     
     normalizePCP();
     
-    //if ( PCP_TOGGLE ) {
-    //  for ( int k = 0; k < fftSize; k++ ) {
-    //    if ( freq[k] < freqLowRange || freq[k] > freqHighRange ) { continue; }
-        
-    //    spectrum[k] *= pcp[frameNumber][freqToPitch(freq[k]) % 12];  
-    //  }
-    //}
+    if ( PCP_TOGGLE ) {
+      for ( int k = 0; k < fftSize; k++ ) {
+        if ( freq[k] < freqLowRange || freq[k] > freqHighRange ) { continue; }
+        spectrum[k] *= pcp[freqToPitch(freq[k]) % 12];  
+       }
+     }
     
     float sprev = 0;
     float scurr = 0;
