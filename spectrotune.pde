@@ -5,25 +5,13 @@ import rwmidi.*;
 import controlP5.*;
 import java.lang.reflect.InvocationTargetException;
 
-//int bufferSize = 32768;
-//int bufferSize = 16384;
-//int bufferSize = 8192;
-//int bufferSize = 4096;
 int bufferSize = 2048;
 int sampleRate = 44100;
-//int bufferSize = 1024;
-//int bufferSize = 512;
 
-// since we are dealing with small buffer sizes (1024) but are trying to detect peaks at low frequency ranges
-// octaves 0 .. 2 for example, zero padding is nessessary to improve the interpolation resolution of the FFT
-// otherwise FFT bins will be quite large making it impossible to distinguish between low octave notes which
-// are seperated by only a few Hz in these ranges.
-
+int ZERO_PAD_MULTIPLIER = 4;
+int fftBufferSize = bufferSize * ZERO_PAD_MULTIPLIER;
+int fftSize = fftBufferSize/2;
 int PEAK_THRESHOLD = 50; // default peak threshold
-
-//float framesPerSecond = 25.0;
-
-// MIDI notes span from 0 - 128, octaves -1 -> 9. Specify start and end for piano
 int keyboardStart = 12; // 12 is octave C0
 int keyboardEnd = 108;
 
@@ -58,19 +46,18 @@ PImage bg;
 PImage whiteKey;
 PImage blackKey;
 PImage octaveBtn;
+PImage logo;
 
-int fftBufferSize = bufferSize;
-int fftSize = fftBufferSize/2;
-
-Note[] notes;
-float[] pcp;
-
-float[] buffer = new float[fftBufferSize];
+float[] buffer = new float[fftSize];
 float[] spectrum = new float[fftSize];
 int[] peak = new int[fftSize];
 
+float[] pcp;
+Note[] notes;
+
 int[] fftBinStart = new int[8]; 
 int[] fftBinEnd = new int[8];
+
 float[] scaleProfile = new float[12];
 
 float linearEQIntercept = 1f; // default no eq boost
@@ -90,8 +77,6 @@ boolean LINEAR_TOGGLE = false;
 boolean QUADRATIC_TOGGLE = false;
 boolean EXPONENTIAL_TOGGLE = false;
 
-boolean TRACK_LOADED = false;
-
 boolean[] OCTAVE_TOGGLE = {false, true, true, true, true, true, true, true};
 int[] OCTAVE_CHANNEL = {0,0,0,0,0,0,0,0}; // set all octaves to channel 0 (0-indexed channel 1)
 
@@ -109,7 +94,7 @@ void setup() {
   //frameRate(framesPerSecond); // lock framerate
   
   // Create MIDI output interface - select the first found device by default
-  midiOut = RWMidi.getOutputDevices()[0].createOutput();
+  midiOut = RWMidi.getOutputDevices()[1].createOutput();
 
   // Initialize Minim
   minim = new Minim(this);
@@ -121,8 +106,10 @@ void setup() {
   
   window = new Window();
   smoother = new Smooth();
-  
+
+  zeroPadBuffer();
   // Equalizer settings. Need a tab for this.
+  
   linearEQIntercept = 1f;
   linearEQSlope = 0.01f;
   

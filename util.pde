@@ -57,7 +57,7 @@ void normalizePCP() {
 }
 
 void zeroPadBuffer() {
-  for (int i = 0; i < bufferSize; i++) {
+  for (int i = 0; i < fftBufferSize; i++) {
     buffer[i] = 0f;
   }  
 }
@@ -66,8 +66,8 @@ void precomputeOctaveRegions() {
   for ( int j = 0; j < 8; j++) {
     fftBinStart[j] = 0;
     fftBinEnd[j] = 0;
-    for ( int k = 0; k < bufferSize; k++) {
-      float freq = k / (float)bufferSize * sampleRate;
+    for ( int k = 0; k < fftSize; k++) {
+      float freq = k / (float)fftBufferSize * sampleRate;
       if ( freq >= octaveLowRange(j) && fftBinStart[j] == 0 ) {
         fftBinStart[j] = k;
       } else if ( freq > octaveHighRange(j) && fftBinEnd[j] == 0 ) {
@@ -76,13 +76,5 @@ void precomputeOctaveRegions() {
       }
     }
   }
-  println("Start: " + fftBinStart[0] + " End: " + fftBinEnd[7] + " (" + bufferSize + " total)");
-}
-
-void openAudioFile(String audioFile) {
-  println(audioFile);
-}
-
-boolean isLoaded() {
-  return true;
+  println("Start: " + fftBinStart[0] + " End: " + fftBinEnd[7] + " (" + fftSize + " total)");
 }

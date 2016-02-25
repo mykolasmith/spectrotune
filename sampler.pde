@@ -21,35 +21,17 @@ class Sampler implements AudioListener
     
     //smoother.apply(fft); // run the smoother on the fft spectra
     
-    float[] binDistance = new float[bufferSize];
-    float[] freq = new float[bufferSize];
-    
-    pcp = new float[bufferSize];
+    float[] binDistance = new float[fftSize];
+    float[] freq = new float[fftSize];
+    pcp = new float[fftBufferSize];
     notes = new Note[128];
     
     float freqLowRange = octaveLowRange(0);
     float freqHighRange = octaveHighRange(7);
     
-    for (int k = 0; k < fftSize; k++) {
-      freq[k] = k / (float)fftBufferSize * in.sampleRate();
-      
-      // skip FFT bins that lay outside of octaves 0-9 
       if ( freq[k] < freqLowRange || freq[k] > freqHighRange ) { continue; }
-   
-      // Calculate fft bin distance and apply weighting to spectrum
-      float closestFreq = pitchToFreq(freqToPitch(freq[k])); // Rounds FFT frequency to closest semitone frequency
       boolean filterFreq = false;
-  
-      // Filter out frequncies from disabled octaves    
-      for ( int i = 0; i < 8; i ++ ) {
-        if ( !OCTAVE_TOGGLE[i] ) {
-          if ( closestFreq >= octaveLowRange(i) && closestFreq <= octaveHighRange(i) ) {
-            filterFreq = true;
-          }
-        }
-      }
       
-      // Set spectrum 
       if ( !filterFreq ) {
         binDistance[k] = 2 * abs((12 * log(freq[k]/440.0) / log(2)) - (12 * log(closestFreq/440.0) / log(2)));
         
@@ -58,7 +40,6 @@ class Sampler implements AudioListener
         if ( LINEAR_EQ_TOGGLE ) {
           spectrum[k] *= (linearEQIntercept + k * linearEQSlope);
         }
-        
         // Sum PCP bins
         pcp[freqToPitch(freq[k]) % 12] += pow(fft.getBand(k), 2) * binWeight(WEIGHT_TYPE, binDistance[k]);
       }
@@ -70,8 +51,6 @@ class Sampler implements AudioListener
       for ( int k = 0; k < fftSize; k++ ) {
         if ( freq[k] < freqLowRange || freq[k] > freqHighRange ) { continue; }
         spectrum[k] *= pcp[freqToPitch(freq[k]) % 12];  
-       }
-     }
     
     float sprev = 0;
     float scurr = 0;
@@ -98,7 +77,6 @@ class Sampler implements AudioListener
         float interpolatedAmplitude = y0 - 0.25 * (ym1 - yp1) * p;
         float a = 0.5 * (ym1 - 2 * y0 + yp1);  
         
-        float interpolatedFrequency = (k + p) * in.sampleRate() / fftBufferSize;
         
         if ( freqToPitch(interpolatedFrequency) != freqToPitch(freq[k]) ) {
           freq[k] = interpolatedFrequency;
@@ -130,7 +108,6 @@ class Sampler implements AudioListener
           
           Note note = new Note(freq[k], spectrum[k]);
           notes = (Note[])append(notes, note);
-          //midiOut.sendNoteOn(note.channel, note.pitch, note.velocity);
           
           // Track Peaks and Levels in this pass so we can detect harmonics 
           foundPeak = append(foundPeak, freq[k]);
