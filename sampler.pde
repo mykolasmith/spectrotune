@@ -29,7 +29,10 @@ class Sampler implements AudioListener
     float freqLowRange = octaveLowRange(0);
     float freqHighRange = octaveHighRange(7);
     
+    for (int k=0; k < fftSize; k++) {
+      freq[k] = k / (float)fftBufferSize * sampleRate;
       if ( freq[k] < freqLowRange || freq[k] > freqHighRange ) { continue; }
+      float closestFreq = pitchToFreq(freqToPitch(freq[k]));
       boolean filterFreq = false;
       
       if ( !filterFreq ) {
@@ -40,6 +43,7 @@ class Sampler implements AudioListener
         if ( LINEAR_EQ_TOGGLE ) {
           spectrum[k] *= (linearEQIntercept + k * linearEQSlope);
         }
+
         // Sum PCP bins
         pcp[freqToPitch(freq[k]) % 12] += pow(fft.getBand(k), 2) * binWeight(WEIGHT_TYPE, binDistance[k]);
       }
@@ -50,7 +54,10 @@ class Sampler implements AudioListener
     if ( PCP_TOGGLE ) {
       for ( int k = 0; k < fftSize; k++ ) {
         if ( freq[k] < freqLowRange || freq[k] > freqHighRange ) { continue; }
+        
         spectrum[k] *= pcp[freqToPitch(freq[k]) % 12];  
+      }
+    }
     
     float sprev = 0;
     float scurr = 0;
@@ -77,6 +84,7 @@ class Sampler implements AudioListener
         float interpolatedAmplitude = y0 - 0.25 * (ym1 - yp1) * p;
         float a = 0.5 * (ym1 - 2 * y0 + yp1);  
         
+        float interpolatedFrequency = (k + p) * sampleRate / fftBufferSize;
         
         if ( freqToPitch(interpolatedFrequency) != freqToPitch(freq[k]) ) {
           freq[k] = interpolatedFrequency;
