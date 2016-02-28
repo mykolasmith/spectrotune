@@ -1,26 +1,6 @@
 void keyPressed() {
   switch(key) {
     
-    case 'n': // mute midi toggle
-      MIDI_TOGGLE = !MIDI_TOGGLE;
-      toggleMIDI.setState(MIDI_TOGGLE);
-      break;
-    
-    case 'e': // turn equalizer on/off
-      LINEAR_EQ_TOGGLE = !LINEAR_EQ_TOGGLE;
-      toggleLinearEQ.setState(LINEAR_EQ_TOGGLE);
-      break;
-    
-    case 'p': // turn PCP on/off
-      PCP_TOGGLE = !PCP_TOGGLE;
-      togglePCP.setState(PCP_TOGGLE);
-      break;
-      
-    case 'h': // turn Harmonic filter on/off
-      HARMONICS_TOGGLE = !HARMONICS_TOGGLE;
-      toggleHarmonics.setState(HARMONICS_TOGGLE);
-      break;
-    
     // Octave Toggles
     case '0':
       OCTAVE_TOGGLE[0] = !OCTAVE_TOGGLE[0];
@@ -149,16 +129,5 @@ void oct6(int channel) {
 void oct7(int channel) {
   if (channel > 0) {
     OCTAVE_CHANNEL[7] = channel -1;
-  }
-}
-
-void balance(int value) {
-  sliderBalance.setValueLabel(value + "%");
-  if ( value == 0 ) {
-    sliderBalance.setValueLabel("  CENTER");
-  } else if ( value < 0 ) {
-    sliderBalance.setValueLabel(value * -1 + "% LEFT");
-  } else if ( value > 0 ) {
-    sliderBalance.setValueLabel(value + "% RIGHT");
   }
 }
