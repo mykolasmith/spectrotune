@@ -4,7 +4,6 @@ public class Smooth {
   public static final int TRIANGLE = 2;
   public static final int ADJAVG = 3;
 
-
   private int mode = NONE;
   private int points = 3;
 
