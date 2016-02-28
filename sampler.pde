@@ -18,7 +18,6 @@ class Sampler implements AudioListener
   
   void analyze() {
     fft.forward(buffer); // run fft on the buffer
-    
     //smoother.apply(fft); // run the smoother on the fft spectra
     
     float[] binDistance = new float[fftSize];
@@ -45,7 +44,7 @@ class Sampler implements AudioListener
         }
 
         // Sum PCP bins
-        pcp[freqToPitch(freq[k]) % 12] += pow(fft.getBand(k), 2) * binWeight(WEIGHT_TYPE, binDistance[k]);
+        pcp[freqToPitch(freq[k]) % 12] += pow(fft.getBand(k), 3) * binWeight(WEIGHT_TYPE, binDistance[k]);
       }
     }
     
@@ -116,7 +115,7 @@ class Sampler implements AudioListener
           
           Note note = new Note(freq[k], spectrum[k]);
           notes = (Note[])append(notes, note);
-          
+          //midiOut.sendNoteOn(note.channel, note.pitch, note.velocity);
           // Track Peaks and Levels in this pass so we can detect harmonics 
           foundPeak = append(foundPeak, freq[k]);
           foundLevel = append(foundLevel, spectrum[k]);    

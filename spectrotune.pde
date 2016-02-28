@@ -3,7 +3,6 @@ import ddf.minim.*;
 import ddf.minim.analysis.*;
 import rwmidi.*;
 import controlP5.*;
-import java.lang.reflect.InvocationTargetException;
 
 int bufferSize = 2048;
 int sampleRate = 44100;
@@ -48,7 +47,7 @@ PImage blackKey;
 PImage octaveBtn;
 PImage logo;
 
-float[] buffer = new float[fftSize];
+float[] buffer = new float[fftBufferSize];
 float[] spectrum = new float[fftSize];
 int[] peak = new int[fftSize];
 
@@ -91,8 +90,6 @@ public static final int SLOPEDOWN = 5;
 void setup() {
   size(510, 288);
   
-  //frameRate(framesPerSecond); // lock framerate
-  
   // Create MIDI output interface - select the first found device by default
   midiOut = RWMidi.getOutputDevices()[1].createOutput();
 
@@ -102,7 +99,7 @@ void setup() {
   sampler = new Sampler();
   in = minim.getLineIn(Minim.MONO, bufferSize, sampleRate);
   in.addListener(sampler);
-  fft = new FFT(in.bufferSize(), in.sampleRate());
+  fft = new FFT(fftBufferSize, sampleRate);
   
   window = new Window();
   smoother = new Smooth();
