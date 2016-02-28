@@ -36,11 +36,11 @@ class Sampler implements AudioListener
   }
   
   void process() {
-      window.transform(left); // add window to samples
-      arrayCopy(left, 0, buffer, 0, left.length);
-      frameNumber++;
-      analyze();
-      outputMIDINotes();
+    window.transform(left); // add window to samples
+    arrayCopy(left, 0, buffer, 0, left.length);
+    frameNumber++;
+    analyze();
+    outputMIDINotes();
   }
   
   void analyze() {

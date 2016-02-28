@@ -33,6 +33,11 @@ void renderPeaks() {
   noStroke();
   int keyLength = 10;
   int scroll = (frameNumber * keyLength > width) ? frameNumber - width/keyLength: 0;
+  if ( scroll >= 512 ){
+      frameNumber = 0;
+      notes = new Note[bufferSize][0];
+      pcp = new float[bufferSize][12];
+    }
   for ( int x = frameNumber; x >= scroll; x-- ) {
     for ( int i = 0; i < notes[x].length; i++ ) {
       Note note = notes[x][i];
