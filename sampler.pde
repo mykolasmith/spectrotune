@@ -1,41 +1,67 @@
 class Sampler implements AudioListener
 {
   
-  Sampler() {}
+  private float[] left;
+  private float[] right;
   
-  synchronized void samples(float[] samples) {
-    process(samples);
+  Sampler() {
+    left = null;
+    right = null;
   }
   
-  synchronized void samples(float[] left, float[] right) {}
+  synchronized void samples(float[] sampleBuffer) {
+    left = sampleBuffer;
+    process();
+  }
   
-  void process(float[] samples) {
-    pcp = new float[fftBufferSize];
-    notes = new Note[128];
-    window.transform(samples); // add window to samples
-    arrayCopy(samples, 0, buffer, 0, samples.length);
-    frameNumber++;
-    analyze();
-    outputMIDINotes();
+  synchronized void samples(float[] sampleBufferLeft, float[] sampleBufferRight) {
+    left = sampleBufferLeft;
+    right = sampleBufferRight;
+    
+    // Apply balance to sample buffer storing in left mono buffer
+    for ( int i = 0; i < bufferSize; i++ ) {
+      int balanceValue = 50;
+      if ( balanceValue > 0 ) {
+        float balancePercent = (100 - balanceValue) / 100.0; 
+        left[i] = (left[i] / 2f * balancePercent) + right[i] / 2f;
+      } else if ( balanceValue < 0 ) {
+        float balancePercent = (100 - balanceValue * -1) / 100.0; 
+        left[i] = left[i] / 2f + (right[i] / 2f * balancePercent);
+      } else {
+        left[i] = (left[i] + right[i]) / 2f;
+      }
+    }
+    
+    process();
+  }
+  
+  void process() {
+      window.transform(left); // add window to samples
+      arrayCopy(left, 0, buffer, 0, left.length);
+      frameNumber++;
+      analyze();
+      outputMIDINotes();
   }
   
   void analyze() {
-    fft.forward(buffer); // run fft on the buffer
-    //smoother.apply(fft); // run the smoother on the fft
+    fft.forward(buffer); // run fft on the buffer  
     
     float[] binDistance = new float[fftSize];
     float[] freq = new float[fftSize];
-
-    
+      
     float freqLowRange = octaveLowRange(0);
     float freqHighRange = octaveHighRange(7);
     
-    for (int k=0; k < fftSize; k++) {
-      freq[k] = k / (float)fftBufferSize * sampleRate;
+    for (int k = 0; k < fftSize; k++) {
+      freq[k] = k / (float)fftBufferSize * in.sampleRate();
+      // skip FFT bins that lay outside of octaves 0-9 
       if ( freq[k] < freqLowRange || freq[k] > freqHighRange ) { continue; }
-      float closestFreq = pitchToFreq(freqToPitch(freq[k]));
+   
+      // Calculate fft bin distance and apply weighting to spectrum
+      float closestFreq = pitchToFreq(freqToPitch(freq[k])); // Rounds FFT frequency to closest semitone frequency
       boolean filterFreq = false;
       
+      // Set spectrum 
       if ( !filterFreq ) {
         binDistance[k] = 2 * abs((12 * log(freq[k]/440.0) / log(2)) - (12 * log(closestFreq/440.0) / log(2)));
         
@@ -44,9 +70,9 @@ class Sampler implements AudioListener
         if ( LINEAR_EQ_TOGGLE ) {
           spectrum[k] *= (linearEQIntercept + k * linearEQSlope);
         }
-
+        
         // Sum PCP bins
-        pcp[freqToPitch(freq[k]) % 12] += pow(fft.getBand(k), 3) * binWeight(WEIGHT_TYPE, binDistance[k]);
+        pcp[frameNumber][freqToPitch(freq[k]) % 12] += pow(fft.getBand(k), 2) * binWeight(WEIGHT_TYPE, binDistance[k]);
       }
     }
     
@@ -56,7 +82,7 @@ class Sampler implements AudioListener
       for ( int k = 0; k < fftSize; k++ ) {
         if ( freq[k] < freqLowRange || freq[k] > freqHighRange ) { continue; }
         
-        spectrum[k] *= pcp[freqToPitch(freq[k]) % 12];  
+        spectrum[k] *= pcp[frameNumber][freqToPitch(freq[k]) % 12];  
       }
     }
     
@@ -115,8 +141,8 @@ class Sampler implements AudioListener
         } else {
           peak[k] = PEAK;
           
-          Note note = new Note(freq[k], spectrum[k]);
-          notes = (Note[])append(notes, note);
+          notes[frameNumber] = (Note[])append(notes[frameNumber], new Note(freq[k], spectrum[k]));
+          
           // Track Peaks and Levels in this pass so we can detect harmonics 
           foundPeak = append(foundPeak, freq[k]);
           foundLevel = append(foundLevel, spectrum[k]);    

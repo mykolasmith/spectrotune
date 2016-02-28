@@ -52,8 +52,8 @@ float[] buffer = new float[fftBufferSize];
 float[] spectrum = new float[fftSize];
 int[] peak = new int[fftSize];
 
-float[] pcp;
-Note[] notes;
+float[][] pcp;
+Note[][] notes;
 
 int[] fftBinStart = new int[8]; 
 int[] fftBinEnd = new int[8];
@@ -98,16 +98,16 @@ void setup() {
   minim = new Minim(this);
   
   sampler = new Sampler();
-  in = minim.getLineIn(Minim.MONO, bufferSize, sampleRate);
+  in = minim.getLineIn(Minim.STEREO, bufferSize, sampleRate);
   in.addListener(sampler);
   fft = new FFT(fftBufferSize, sampleRate);
+  notes = new Note[bufferSize][0];
+  pcp = new float[bufferSize][12];
+  zeroPadBuffer();
+  precomputeOctaveRegions();
   
   window = new Window();
   smoother = new Smooth();
-
-  zeroPadBuffer();
-  precomputeOctaveRegions();
-  // Equalizer settings. Need a tab for this.
   
   linearEQIntercept = 1f;
   linearEQSlope = 0.01f;

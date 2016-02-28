@@ -1,33 +1,4 @@
 void keyPressed() {
-  switch(key) {
-    
-    // Octave Toggles
-    case '0':
-      OCTAVE_TOGGLE[0] = !OCTAVE_TOGGLE[0];
-      break;
-    case '1':
-      OCTAVE_TOGGLE[1] = !OCTAVE_TOGGLE[1];
-      break;
-    case '2':
-      OCTAVE_TOGGLE[2] = !OCTAVE_TOGGLE[2];
-      break;
-    case '3':
-      OCTAVE_TOGGLE[3] = !OCTAVE_TOGGLE[3];
-      break;
-    case '4':
-      OCTAVE_TOGGLE[4] = !OCTAVE_TOGGLE[4];
-      break;
-    case '5':
-      OCTAVE_TOGGLE[5] = !OCTAVE_TOGGLE[5];
-      break;
-    case '6':
-      OCTAVE_TOGGLE[6] = !OCTAVE_TOGGLE[6];
-      break;
-    case '7':
-      OCTAVE_TOGGLE[7] = !OCTAVE_TOGGLE[7];
-      break;
-  }
-  
   switch(keyCode) {
     case RIGHT:
       PEAK_THRESHOLD += 5;

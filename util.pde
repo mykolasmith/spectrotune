@@ -50,9 +50,9 @@ float binWeight(int type, float x) {
 }
 
 void normalizePCP() {
-  float pcpMax = max(pcp);
+  float pcpMax = max(pcp[frameNumber]);
   for ( int k = 0; k < 12; k++ ) {
-    pcp[k] /= pcpMax;
+    pcp[frameNumber][k] /= pcpMax;
   }
 }
 
