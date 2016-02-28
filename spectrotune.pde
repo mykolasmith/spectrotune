@@ -6,6 +6,7 @@ import controlP5.*;
 
 int bufferSize = 2048;
 int sampleRate = 44100;
+int frameNumber = -1;
 
 int ZERO_PAD_MULTIPLIER = 4;
 int fftBufferSize = bufferSize * ZERO_PAD_MULTIPLIER;
@@ -105,6 +106,7 @@ void setup() {
   smoother = new Smooth();
 
   zeroPadBuffer();
+  precomputeOctaveRegions();
   // Equalizer settings. Need a tab for this.
   
   linearEQIntercept = 1f;
@@ -222,14 +224,13 @@ void setup() {
     .moveTo(tabSmoothing);
 
   // FILE TAB -- think about adding sDrop support.. may be better
-
   
   ui.addTextlabel("labelFFT", "FFT", 380, 10).moveTo(tabFFT);
   
   // FFT bin distance weighting radios
   //ui.addTextlabel("labelWeight", "FFT WEIGHT", 380, 30);
   ui.addRadioButton("radioWeight", 380, 30)
-    .addItem("UNIFORM (OFF)", UNIFORM) // default
+    .addItem("UNIFORM (OFF)", UNIFORM)
     .addItem("DISCRETE", DISCRETE)
     .addItem("LINERAR", LINEAR)
     .addItem("QUADRATIC", QUADRATIC)
@@ -242,7 +243,6 @@ void setup() {
   // GLOBAL UI  
   textFont(createFont("Arial", 10, true));
   rectMode(CORNERS);
-  smooth();
 }
 
 void draw() {

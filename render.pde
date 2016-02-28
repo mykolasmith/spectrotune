@@ -1,6 +1,7 @@
 void render() {
   image(bg, 0, 0); // Render the background
-   // Render octave toggle buttons for active octaves
+  
+  // Render octave toggle buttons for active octaves
   for ( int i = 0; i < 8; i++ ) {
     if ( OCTAVE_TOGGLE[i] ) {
       image(octaveBtn, 0, height - (i * 36) - 36);
@@ -8,46 +9,45 @@ void render() {
   }
   
   String selectedTab = ui.getWindow().getCurrentTab().getName();
-
+  
   if ( selectedTab == "windowing") {
     renderWindowCurve();
-    renderFFT();
   } else if ( selectedTab == "FFT" ) {
     renderFFT();
-  } else if ( selectedTab == "smoothing") {
+  } else if ( selectedTab == "smoothing" ) {
     renderFFT();
   } else {
     renderPeaks();
   }
-  
+
   // Render semi transparent UI background
   fill(0, 200);
   rect(width - 140, 0, width, height);
-  
 }
 
 void renderPeaks() {
   int keyHeight = height / (keyboardEnd - keyboardStart);
   
-  // render key presses for detected peaks
-  for ( int i = 0; i < notes.length; i++ ) {
-    Note note = notes[i];
-    if ( note == null) { continue; }
-    if ( note.isWhiteKey() ) {
-      image(whiteKey, 10, height - ((note.pitch - keyboardStart) * keyHeight + keyHeight));
-    } else if ( note.isBlackKey() ) {
-      image(blackKey, 10, height - ((note.pitch - keyboardStart) * keyHeight + keyHeight));
-    }
-  }
-  
-  // render detected peaks
-  noStroke();
-  int keyLength = 10;
-  int scroll = (1 * keyLength > width) ? 1 - width/keyLength: 0;
-
+  if ( true ) {
+    // render key presses for detected peaks
     for ( int i = 0; i < notes.length; i++ ) {
       Note note = notes[i];
-      if ( note == null) { continue; }
+      if (note == null) { continue; }
+      if ( note.isWhiteKey() ) {
+        image(whiteKey, 10, height - ((note.pitch - keyboardStart) * keyHeight + keyHeight));
+      } else if ( note.isBlackKey() ) {
+        image(blackKey, 10, height - ((note.pitch - keyboardStart) * keyHeight + keyHeight));
+      }
+    }
+    
+    // render detected peaks
+    noStroke();
+    int keyLength = 10;
+    int scroll = (frameNumber * keyLength > width) ? frameNumber - width/keyLength: 0;
+    for ( int i = 0; i < notes.length; i++ ) {
+      Note note = notes[i];
+      if (note == null) { continue; }
+      
       color noteColor;
       
       if ( pcp[note.pitch % 12] == 1.0 ) {
@@ -57,23 +57,24 @@ void renderPeaks() {
       }
       
       fill(red(noteColor)/4, green(noteColor)/4, blue(noteColor)/4);
-      rect(keyLength + 24, height - ((note.pitch - keyboardStart) * keyHeight),  keyLength + keyLength + 25 , height - ((note.pitch - keyboardStart) * keyHeight + keyHeight));
+      rect(abs(scroll - frameNumber) * keyLength + 24, height - ((note.pitch - keyboardStart) * keyHeight), abs(scroll - frameNumber) * keyLength + keyLength + 25 , height - ((note.pitch - keyboardStart) * keyHeight + keyHeight));
         
       fill(noteColor);
-      rect(keyLength + 24, height - ((note.pitch - keyboardStart) * keyHeight) - 1, keyLength + keyLength + 24 , height - ((note.pitch - keyboardStart) * keyHeight + keyHeight));
-   }
+      rect(abs(scroll - frameNumber) * keyLength + 24, height - ((note.pitch - keyboardStart) * keyHeight) - 1, abs(scroll - frameNumber) * keyLength + keyLength + 24 , height - ((note.pitch - keyboardStart) * keyHeight + keyHeight));
+    }
 
-  // output semitone text labels 
-  textSize(10);
-  
-  for ( int i = 0; i < notes.length; i++ ) {
-    Note note = notes[i];
-    if ( note == null) { continue; }
-    fill(20);
-    text(note.label(), 24 + 1, height - ((note.pitch - keyboardStart) * keyHeight + keyHeight + 1));
-      
-    fill(140);
-    text(note.label(), 24, height - ((note.pitch - keyboardStart) * keyHeight + keyHeight + 2));
+    // output semitone text labels 
+    textSize(10);
+    
+    for ( int i = 0; i < notes.length; i++ ) {
+      Note note = notes[i];
+      if (note == null) { continue; }
+      fill(20);
+      text(note.label(), 24 + 1, height - ((note.pitch - keyboardStart) * keyHeight + keyHeight + 1));
+        
+      fill(140);
+      text(note.label(), 24, height - ((note.pitch - keyboardStart) * keyHeight + keyHeight + 2));
+    }
   }
 }
 
@@ -101,9 +102,11 @@ void renderFFT() {
   
   int previousPitch = -1;
   int currentPitch;
+  float amplitudeTotal = 0f;
   
+  if ( true ) {
   for ( int k = 0; k < spectrum.length; k++ ) {
-    float freq = k / (float)fftBufferSize * in.sampleRate();
+    float freq = k / (float)fftBufferSize * sampleRate;
     
     currentPitch = freqToPitch(freq);
     
@@ -114,7 +117,7 @@ void renderFFT() {
       previousPitch = currentPitch;
     }
   }
-
+  
   for ( int i = keyboardStart; i < keyboardEnd; i++) {
     //noteColor = color(255, 100 * amp[i] / 400, 0);
     noteColor = color(0, 255, 240);
@@ -124,6 +127,7 @@ void renderFFT() {
         
     fill(noteColor);
     rect(24, height - ((i - keyboardStart) * keyHeight) - 1, 24 + amp[i] , height - ((i - keyboardStart) * keyHeight + keyHeight));
+  }
   }
   stroke(255);
   ui.getController("labelThreshold").setPosition(PEAK_THRESHOLD + 26, 60);

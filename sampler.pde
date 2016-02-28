@@ -10,20 +10,22 @@ class Sampler implements AudioListener
   synchronized void samples(float[] left, float[] right) {}
   
   void process(float[] samples) {
+    pcp = new float[fftBufferSize];
+    notes = new Note[128];
     window.transform(samples); // add window to samples
     arrayCopy(samples, 0, buffer, 0, samples.length);
+    frameNumber++;
     analyze();
-    outputMIDINotes();      
+    outputMIDINotes();
   }
   
   void analyze() {
     fft.forward(buffer); // run fft on the buffer
-    //smoother.apply(fft); // run the smoother on the fft spectra
+    //smoother.apply(fft); // run the smoother on the fft
     
     float[] binDistance = new float[fftSize];
     float[] freq = new float[fftSize];
-    pcp = new float[fftBufferSize];
-    notes = new Note[128];
+
     
     float freqLowRange = octaveLowRange(0);
     float freqHighRange = octaveHighRange(7);
@@ -115,7 +117,6 @@ class Sampler implements AudioListener
           
           Note note = new Note(freq[k], spectrum[k]);
           notes = (Note[])append(notes, note);
-          //midiOut.sendNoteOn(note.channel, note.pitch, note.velocity);
           // Track Peaks and Levels in this pass so we can detect harmonics 
           foundPeak = append(foundPeak, freq[k]);
           foundLevel = append(foundLevel, spectrum[k]);    
