@@ -6,7 +6,7 @@ import controlP5.*;
 
 int bufferSize = 2048;
 int sampleRate = 44100;
-int frameNumber = -1;
+int frameNumber = 0;
 
 int ZERO_PAD_MULTIPLIER = 4;
 int fftBufferSize = bufferSize * ZERO_PAD_MULTIPLIER;
@@ -98,7 +98,7 @@ void setup() {
   minim = new Minim(this);
   
   sampler = new Sampler();
-  in = minim.getLineIn(Minim.STEREO, bufferSize, sampleRate);
+  in = minim.getLineIn(Minim.MONO, bufferSize, sampleRate);
   in.addListener(sampler);
   fft = new FFT(fftBufferSize, sampleRate);
   notes = new Note[bufferSize][0];

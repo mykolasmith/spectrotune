@@ -11,6 +11,7 @@ class Sampler implements AudioListener
   
   synchronized void samples(float[] sampleBuffer) {
     left = sampleBuffer;
+    right = sampleBuffer;
     process();
   }
   
